@@ -11,7 +11,8 @@ import {
   exportToCopilotString,
   exportToOpenCodeString,
   exportToCursorString,
-  exportToGeminiString,
+exportToGeminiString,
+exportToCodexString,
 } from '../adapters/index.js';
 import { exportToLyzrString } from '../adapters/lyzr.js';
 import { exportToGitHubString } from '../adapters/github.js';
@@ -24,7 +25,8 @@ interface ExportOptions {
 
 export const exportCommand = new Command('export')
   .description('Export agent to other formats')
-  .requiredOption('-f, --format <format>', 'Export format (system-prompt, claude-code, openai, crewai, openclaw, nanobot, lyzr, github, copilot, opencode, cursor, gemini)')
+.requiredOption('-f, --format <format>', 'Export format (system-prompt, claude-code, openai, crewai, openclaw, nanobot, lyzr, github, copilot, opencode, cursor, gemini)')
+.requiredOption('-f, --format <format>', 'Export format (system-prompt, claude-code, openai, crewai, openclaw, nanobot, lyzr, github, copilot, opencode, cursor, codex)')
   .option('-d, --dir <dir>', 'Agent directory', '.')
   .option('-o, --output <output>', 'Output file path')
   .action(async (options: ExportOptions) => {
@@ -70,12 +72,15 @@ export const exportCommand = new Command('export')
         case 'cursor':
           result = exportToCursorString(dir);
           break;
-        case 'gemini':
+case 'gemini':
           result = exportToGeminiString(dir);
           break;
         default:
           error(`Unknown format: ${options.format}`);
           info('Supported formats: system-prompt, claude-code, openai, crewai, openclaw, nanobot, lyzr, github, copilot, opencode, cursor, gemini');
+case 'codex':
+          result = exportToCodexString(dir);
+          info('Supported formats: system-prompt, claude-code, openai, crewai, openclaw, nanobot, lyzr, github, copilot, opencode, cursor, codex');
           process.exit(1);
       }
 
