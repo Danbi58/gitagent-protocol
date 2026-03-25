@@ -346,8 +346,11 @@ function importFromGemini(sourcePath: string, targetDir: string): void {
 
   const dirName = basename(sourceDir);
 
-  // Determine model from settings.json
-  const model = settings.model as string | undefined;
+  // Determine model from settings.json (can be string or { id, provider } object)
+  const rawModel = settings.model;
+  const model = typeof rawModel === 'object' && rawModel !== null
+    ? (rawModel as Record<string, string>).id
+    : rawModel as string | undefined;
   const agentYaml: Record<string, unknown> = {
     spec_version: '0.1.0',
     name: dirName.toLowerCase().replace(/[^a-z0-9-]/g, '-'),
