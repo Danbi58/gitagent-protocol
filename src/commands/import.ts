@@ -548,12 +548,12 @@ export const importCommand = new Command('import')
         case 'gemini':
           importFromGemini(sourcePath, targetDir);
           break;
-        default:
-          error(`Unknown format: ${options.from}`);
-          info('Supported formats: claude, cursor, crewai, opencode, gemini');
         case 'codex':
           importFromCodex(sourcePath, targetDir);
-          info('Supported formats: claude, cursor, crewai, opencode, codex');
+          break;
+        default:
+          error(`Unknown format: ${options.from}`);
+          info('Supported formats: claude, cursor, crewai, opencode, gemini, codex');
           process.exit(1);
       }
 

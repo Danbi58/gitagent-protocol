@@ -74,12 +74,12 @@ export const exportCommand = new Command('export')
         case 'gemini':
           result = exportToGeminiString(dir);
           break;
-        default:
-          error(`Unknown format: ${options.format}`);
-          info('Supported formats: system-prompt, claude-code, openai, crewai, openclaw, nanobot, lyzr, github, copilot, opencode, cursor, gemini');
         case 'codex':
           result = exportToCodexString(dir);
-          info('Supported formats: system-prompt, claude-code, openai, crewai, openclaw, nanobot, lyzr, github, copilot, opencode, cursor, codex');
+          break;
+        default:
+          error(`Unknown format: ${options.format}`);
+          info('Supported formats: system-prompt, claude-code, openai, crewai, openclaw, nanobot, lyzr, github, copilot, opencode, cursor, gemini, codex');
           process.exit(1);
       }
 
