@@ -13,6 +13,7 @@ import {
   exportToCursorString,
   exportToGeminiString,
   exportToCodexString,
+  exportToKiroString,
 } from '../adapters/index.js';
 import { exportToLyzrString } from '../adapters/lyzr.js';
 import { exportToGitHubString } from '../adapters/github.js';
@@ -77,9 +78,12 @@ export const exportCommand = new Command('export')
         case 'codex':
           result = exportToCodexString(dir);
           break;
+        case 'kiro':
+          result = exportToKiroString(dir);
+          break;
         default:
           error(`Unknown format: ${options.format}`);
-          info('Supported formats: system-prompt, claude-code, openai, crewai, openclaw, nanobot, lyzr, github, copilot, opencode, cursor, gemini, codex');
+          info('Supported formats: system-prompt, claude-code, openai, crewai, openclaw, nanobot, lyzr, github, copilot, opencode, cursor, gemini, codex, kiro');
           process.exit(1);
       }
 
