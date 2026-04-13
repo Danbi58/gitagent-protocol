@@ -21,7 +21,7 @@ export interface OpenCodeRunOptions {
  * Then launches `opencode` in that workspace. OpenCode reads both files
  * automatically on startup.
  *
- * Supports both interactive mode (no prompt) and single-shot mode (`opencode run -p`).
+ * Supports both interactive mode (no prompt) and single-shot mode (`opencode run "<message>"`).
  */
 export function runWithOpenCode(agentDir: string, manifest: AgentManifest, options: OpenCodeRunOptions = {}): void {
   const exp = exportToOpenCode(agentDir);
@@ -45,9 +45,10 @@ export function runWithOpenCode(agentDir: string, manifest: AgentManifest, optio
   // Build opencode CLI args
   const args: string[] = [];
 
-  // Single-shot mode uses `opencode run --prompt "..."`, interactive is just `opencode`
+  // Single-shot mode: `opencode run "<message>"` — prompt is a positional arg.
+  // Note: opencode's `-p` / `--password` is NOT for prompts; the prompt goes as positional message.
   if (options.prompt) {
-    args.push('run', '--prompt', options.prompt);
+    args.push('run', options.prompt);
   }
 
   info(`Launching OpenCode agent "${manifest.name}"...`);
