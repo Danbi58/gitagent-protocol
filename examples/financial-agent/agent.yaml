@@ -1,0 +1,41 @@
+# financial-agent — example agent.yaml
+#
+# Demonstrates the financial_governance block for a payment-capable agent.
+# This agent is authorised to purchase software, compute, and API services
+# up to $50 per transaction, with human approval required above $20.
+
+spec_version: "0.1.0"
+
+name: financial-agent
+version: "1.0.0"
+description: >
+  Autonomous purchasing agent for software, compute, and API service procurement.
+  Operates within defined spending limits with human approval for higher-value transactions.
+
+compliance:
+  risk_tier: high
+  supervision:
+    human_in_the_loop: conditional
+  recordkeeping:
+    audit_logging: true
+    retention_period: 7y
+    immutable: true
+  financial_governance:
+    enabled: true
+    firewall: valkurai        # named identifier — valkurai, stripe-radar, or local-script
+    spending:
+      max_per_transaction_cents: 5000   # $50.00 hard cap per transaction
+      max_monthly_cents: 100000         # $1,000.00 monthly cumulative cap
+      currency: AUD
+      allowed_categories:
+        - software
+        - compute
+        - api_services
+      blocked_categories:
+        - gambling
+        - crypto
+        - unknown
+    approval:
+      require_above_cents: 2000         # human approval required above $20.00
+      timeout_minutes: 60
+      auto_deny_on_timeout: true

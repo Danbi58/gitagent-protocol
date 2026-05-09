@@ -308,7 +308,7 @@
             "triggers": {
               "type": "array",
               "items": { "type": "string" },
-              "description": "Conditions that activate this sub-agent (e.g., factual_claim_detected, confidence_low, domain_mismatch)"
+              "description": "Conditions that activate this sub-agent"
             }
           },
           "additionalProperties": false
@@ -340,7 +340,7 @@
           "properties": {
             "action_type": {
               "type": "string",
-              "description": "Escalate for specific action types (e.g., customer_communication, trade_execution, credit_decision, regulatory_filing)"
+              "description": "Escalate for specific action types"
             }
           },
           "additionalProperties": false
@@ -432,6 +432,9 @@
         },
         "segregation_of_duties": {
           "$ref": "#/$defs/segregation_of_duties_config"
+        },
+        "financial_governance": {
+          "$ref": "#/$defs/financial_governance_config"
         }
       },
       "additionalProperties": false,
@@ -478,7 +481,7 @@
         "human_in_the_loop": {
           "type": "string",
           "enum": ["always", "conditional", "advisory", "none"],
-          "description": "Level of human involvement. 'always': every decision. 'conditional': per escalation_triggers. 'advisory': human notified but not blocking. 'none': fully autonomous."
+          "description": "Level of human involvement."
         },
         "escalation_triggers": {
           "type": "array",
@@ -513,7 +516,7 @@
         "retention_period": {
           "type": "string",
           "pattern": "^\\d+[ymd]$",
-          "description": "Minimum retention period (e.g., 6y = 6 years, 90d = 90 days, 18m = 18 months)"
+          "description": "Minimum retention period (e.g., 6y = 6 years, 90d = 90 days)"
         },
         "log_contents": {
           "type": "array",
@@ -528,7 +531,7 @@
             ]
           },
           "uniqueItems": true,
-          "description": "Categories of data to log. Any subset is valid."
+          "description": "Categories of data to log."
         },
         "immutable": {
           "type": "boolean",
@@ -554,7 +557,7 @@
         "validation_type": {
           "type": "string",
           "enum": ["full", "targeted", "change_based"],
-          "description": "Type of validation. 'full': three-pillar SR 11-7. 'targeted': specific area. 'change_based': triggered by changes."
+          "description": "Type of validation."
         },
         "conceptual_soundness": {
           "type": ["string", "null"],
@@ -566,7 +569,7 @@
         },
         "outcomes_analysis": {
           "type": "boolean",
-          "description": "Whether model outputs are compared to actual results (back-testing)"
+          "description": "Whether model outputs are compared to actual results"
         },
         "drift_detection": {
           "type": "boolean",
@@ -587,7 +590,7 @@
         "pii_handling": {
           "type": "string",
           "enum": ["redact", "encrypt", "prohibit", "allow"],
-          "description": "'redact': strip PII from outputs. 'encrypt': encrypt at rest. 'prohibit': reject PII input. 'allow': no restrictions."
+          "description": "How PII is handled"
         },
         "data_classification": {
           "type": "string",
@@ -608,7 +611,7 @@
         },
         "lda_search": {
           "type": "boolean",
-          "description": "Whether Less Discriminatory Alternative search is required (CFPB Circular 2022-03)"
+          "description": "Whether Less Discriminatory Alternative search is required"
         }
       },
       "additionalProperties": false
@@ -621,7 +624,7 @@
         "type": {
           "type": "string",
           "enum": ["correspondence", "retail", "institutional"],
-          "description": "'correspondence': <=25 retail investors/30 days. 'retail': >25 retail investors/30 days. 'institutional': institutional investors only."
+          "description": "Communication type classification"
         },
         "pre_review_required": {
           "type": "boolean",
@@ -633,7 +636,7 @@
         },
         "no_misleading": {
           "type": "boolean",
-          "description": "Whether misleading, exaggerated, or promissory statements are prohibited"
+          "description": "Whether misleading statements are prohibited"
         },
         "disclosures_required": {
           "type": "boolean",
@@ -661,7 +664,7 @@
         },
         "subcontractor_assessment": {
           "type": "boolean",
-          "description": "Whether fourth-party (subcontractor) risk has been assessed"
+          "description": "Whether fourth-party risk has been assessed"
         }
       },
       "additionalProperties": false
@@ -669,7 +672,7 @@
 
     "segregation_of_duties_config": {
       "type": "object",
-      "description": "Segregation of duties configuration for multi-agent systems. Ensures no single agent has complete control over critical processes.",
+      "description": "Segregation of duties configuration for multi-agent systems.",
       "properties": {
         "roles": {
           "type": "array",
@@ -703,12 +706,10 @@
         },
         "conflicts": {
           "type": "array",
-          "description": "Pairs of role IDs that cannot be held by the same agent (SOD matrix)",
+          "description": "Pairs of role IDs that cannot be held by the same agent",
           "items": {
             "type": "array",
-            "items": {
-              "type": "string"
-            },
+            "items": { "type": "string" },
             "minItems": 2,
             "maxItems": 2
           }
@@ -718,9 +719,7 @@
           "description": "Maps agent names to their assigned roles",
           "additionalProperties": {
             "type": "array",
-            "items": {
-              "type": "string"
-            },
+            "items": { "type": "string" },
             "minItems": 1
           }
         },
@@ -730,13 +729,11 @@
           "properties": {
             "state": {
               "type": "string",
-              "enum": ["full", "shared", "none"],
-              "description": "'full': agents cannot access each other's state. 'shared': read-only cross-access. 'none': no isolation."
+              "enum": ["full", "shared", "none"]
             },
             "credentials": {
               "type": "string",
-              "enum": ["separate", "shared"],
-              "description": "'separate': each role has its own credential scope. 'shared': agents share credentials."
+              "enum": ["separate", "shared"]
             }
           },
           "additionalProperties": false
@@ -750,7 +747,7 @@
             "properties": {
               "action": {
                 "type": "string",
-                "description": "Action type requiring handoff (e.g., credit_decision, loan_disbursement)"
+                "description": "Action type requiring handoff"
               },
               "required_roles": {
                 "type": "array",
@@ -774,6 +771,77 @@
           "default": "strict"
         }
       },
+      "additionalProperties": false
+    },
+
+    "financial_governance_config": {
+      "type": "object",
+      "description": "Runtime financial controls for payment-capable agents. Declarative — enforcement is handled by a pre_tool_use hook calling a compliant financial firewall. A block with no compliant enforcement layer is advisory only.",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "If false, block is declared but not enforced. Default: false."
+        },
+        "firewall": {
+          "type": "string",
+          "description": "Named identifier of the financial firewall implementation (e.g. valkurai, stripe-radar, local-script). Not an endpoint — endpoint config belongs in runtime environment config."
+        },
+        "spending": {
+          "type": "object",
+          "description": "Spending cap and category controls",
+          "properties": {
+            "max_per_transaction_cents": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Hard cap per transaction in smallest currency unit (cents for AUD/USD, pence for GBP). No floats."
+            },
+            "max_monthly_cents": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Cumulative monthly cap in smallest currency unit. Omit to disable."
+            },
+            "currency": {
+              "type": "string",
+              "description": "Default ISO 4217 currency code (e.g. AUD, USD, GBP)."
+            },
+            "allowed_categories": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Permitted spending categories (e.g. software, compute, api_services). Empty array = all categories permitted."
+            },
+            "blocked_categories": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Explicitly blocked spending categories. Evaluated before allowed_categories."
+            }
+          },
+          "required": ["max_per_transaction_cents"],
+          "additionalProperties": false
+        },
+        "approval": {
+          "type": "object",
+          "description": "Human approval threshold and timeout controls",
+          "properties": {
+            "require_above_cents": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Transactions above this amount require human approval before execution. Set to 0 to require approval on all transactions."
+            },
+            "timeout_minutes": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Minutes before an unanswered approval request times out."
+            },
+            "auto_deny_on_timeout": {
+              "type": "boolean",
+              "description": "If true, timeout = DENIED. If false, timeout = APPROVED. Recommended default: true."
+            }
+          },
+          "required": ["require_above_cents", "timeout_minutes", "auto_deny_on_timeout"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["enabled"],
       "additionalProperties": false
     }
   }

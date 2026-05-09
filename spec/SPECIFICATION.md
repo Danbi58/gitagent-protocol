@@ -237,6 +237,27 @@ compliance:
         approval_required: true
 
     enforcement: strict                      # strict | advisory
+
+# Financial governance (runtime spending controls for payment-capable agents)
+  financial_governance:
+    enabled: true                 # false = declared but not enforced
+    firewall: valkurai            # named identifier: valkurai, stripe-radar, local-script
+    spending:
+      max_per_transaction_cents: 5000   # $50.00 hard cap per transaction
+      max_monthly_cents: 100000         # $1,000.00 monthly cumulative cap
+      currency: AUD                     # ISO 4217 default currency
+      allowed_categories:
+        - software
+        - compute
+        - api_services
+      blocked_categories:
+        - gambling
+        - crypto
+        - unknown
+    approval:
+      require_above_cents: 2000         # human approval required above $20.00
+      timeout_minutes: 60
+      auto_deny_on_timeout: true        # timeout = DENIED
 ```
 
 ### Example Minimal agent.yaml
@@ -938,7 +959,12 @@ A valid gitagent repository must:
    - No agent in `assignments` may hold roles that appear together in `conflicts`
    - `handoffs.required_roles` must reference defined role IDs and include at least 2
    - Assigned agents should exist in the `agents` section
-
+9. If `compliance.financial_governance` is present:
+   - `enabled` must be specified
+   - If `enabled` is `true` and `spending` is present, `max_per_transaction_cents` must be a positive integer
+   - `approval.auto_deny_on_timeout` should default to `true` if not specified
+   - `firewall` references a named integration identifier, not an endpoint URL
+  
 ## 19. CLI Commands
 
 ### Implemented (v0.1.0)

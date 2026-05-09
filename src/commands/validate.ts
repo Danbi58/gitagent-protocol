@@ -361,11 +361,44 @@ function validateCompliance(dir: string): ValidationResult {
     }
   }
 
-  // Recommend SOD for multi-agent high/critical risk setups
+// Recommend SOD for multi-agent high/critical risk setups
   if (!sod && manifest.agents && Object.keys(manifest.agents).length >= 2) {
     if (c.risk_tier === 'high' || c.risk_tier === 'critical') {
       result.warnings.push(
         '[SOD] Multi-agent system with high/critical risk tier — consider configuring segregation_of_duties'
+      );
+    }
+  }
+
+  // Financial governance validation
+  const fg = c.financial_governance;
+  if (fg) {
+    if (fg.enabled && fg.spending) {
+      if (fg.spending.max_per_transaction_cents <= 0) {
+        result.valid = false;
+        result.errors.push(
+          '[financial_governance] spending.max_per_transaction_cents must be a positive integer'
+        );
+      }
+    }
+    if (fg.firewall && fg.firewall.startsWith('http')) {
+      result.valid = false;
+      result.errors.push(
+        '[financial_governance] firewall must be a named identifier (e.g. valkurai, stripe-radar, local-script), not an endpoint URL'
+      );
+    }
+  }
+
+  // Warn if high/critical risk agent has financial tools but no financial_governance block
+  if (!fg && (c.risk_tier === 'high' || c.risk_tier === 'critical')) {
+    const hasFinancialTools = manifest.tools?.some(t =>
+      ['payment', 'purchase', 'financial', 'billing', 'invoice', 'stripe', 'pay'].some(keyword =>
+        t.toLowerCase().includes(keyword)
+      )
+    );
+    if (hasFinancialTools) {
+      result.warnings.push(
+        '[financial_governance] Agent has financial tools and high/critical risk tier — consider adding compliance.financial_governance'
       );
     }
   }

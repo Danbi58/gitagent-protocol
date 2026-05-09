@@ -58,8 +58,35 @@ export function buildComplianceSection(compliance: NonNullable<ReturnType<typeof
     if (sod.isolation?.credentials === 'separate') {
       constraints.push('- Credentials are segregated per role');
     }
-    if (sod.enforcement === 'strict') {
+if (sod.enforcement === 'strict') {
       constraints.push('- SOD enforcement is STRICT — violations will block execution');
+    }
+  }
+
+  // Financial governance constraints
+  if (c.financial_governance?.enabled) {
+    const fg = c.financial_governance;
+    constraints.push('- Financial governance is enforced:');
+    if (fg.spending?.max_per_transaction_cents) {
+      constraints.push(`  - Maximum per transaction: ${fg.spending.max_per_transaction_cents} cents`);
+    }
+    if (fg.spending?.max_monthly_cents) {
+      constraints.push(`  - Maximum monthly spend: ${fg.spending.max_monthly_cents} cents`);
+    }
+    if (fg.spending?.allowed_categories && fg.spending.allowed_categories.length > 0) {
+      constraints.push(`  - Allowed categories: ${fg.spending.allowed_categories.join(', ')}`);
+    }
+    if (fg.spending?.blocked_categories && fg.spending.blocked_categories.length > 0) {
+      constraints.push(`  - Blocked categories: ${fg.spending.blocked_categories.join(', ')}`);
+    }
+    if (fg.approval?.require_above_cents !== undefined) {
+      constraints.push(`  - Human approval required above: ${fg.approval.require_above_cents} cents`);
+    }
+    if (fg.approval?.auto_deny_on_timeout) {
+      constraints.push('  - Unanswered approval requests are automatically DENIED');
+    }
+    if (fg.firewall) {
+      constraints.push(`  - Financial firewall: ${fg.firewall}`);
     }
   }
 
